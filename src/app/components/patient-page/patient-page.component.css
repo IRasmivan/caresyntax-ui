@@ -1,0 +1,18 @@
+.generaltxt {
+    text-align: center;
+    padding-top: 35px;
+}
+
+.lefttxt{
+    text-align: left;
+}
+
+.modelAlerttxt{
+    font-size: .9em;
+}
+
+.clearIcon{
+    cursor: pointer; 
+    pointer-events: all; 
+    position: absolute; 
+}

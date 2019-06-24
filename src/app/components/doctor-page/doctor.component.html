@@ -1,0 +1,102 @@
+<div class="firstPage container-fluid">
+
+	<div *ngIf="loader" class="generaltxt d-flex align-items-center justify-content-center h-100">
+		<div class="d-flex flex-column">
+			<i class="fa fa-spinner fa-pulse fa-3x fa-fw"></i>
+			<span class="sr-only">Loading...</span>
+		</div>
+	</div>
+
+	<div *ngIf="noDoctor" class="generaltxt align-items-center justify-content-center h-100">
+		<div class="alert alert-warning" role="alert">
+			There are no doctores in the system, Please add new doctos.
+		</div>
+	</div>
+
+	<div class="generaltxt d-flex align-items-center justify-content-center h-100">
+		<div *ngIf="disableViewDataTable" class="col-xs-4 col-sm-4 col-md-4 col-lg-4 bottom-margin">
+			<div>
+				<h4 class="lefttxt">Doctors List</h4>
+			</div>
+			<p-table #dt [columns]="cols" [value]="dataMarts" [paginator]="true" [rows]="rowPerPage" [pageLinks]="5"
+				[first]="first" [totalRecords]="totalRecords" responsive="true" (onLazyLoad)="loadDoctorLazy($event)"
+				[lazy]="true" class="ui-datatable-scrollable-wrapper view-table">
+				<ng-template pTemplate="header" let-columns>
+					<tr>
+						<th *ngFor="let col of columns">
+							{{col.header}}
+						</th>
+					</tr>
+				</ng-template>
+				<ng-template pTemplate="body" let-rowData let-columns="columns">
+					<tr>
+						<td *ngFor="let col of columns">
+								{{rowData[col.field]}}
+						</td>
+					</tr>
+				</ng-template>
+			</p-table>
+		</div>
+	</div>
+
+	<div class="generaltxt align-items-center justify-content-center h-100">
+		<button type="button" class="mr-2 btn btn-outline-primary" data-toggle="modal" data-target="#addModal">Add Doctor</button>
+		<button type="button" class="mr-2 btn btn-outline-secondary" [disabled]="disableRefresh" (click)="getDoctorService(0)"> Refresh Grid</button>
+	</div>
+	<!-- No results section-->
+	<div class="generaltxt align-items-center justify-content-center h-100" *ngIf="resultviewerror">
+		<div class="alert alert-danger" role="alert">
+			{{message}}
+		</div>
+	</div>
+
+	<!-- The Modal -->
+	<div class="modal" id="addModal">
+		<div class="modal-dialog">
+		  <div class="modal-content">
+	  
+			<!-- Modal Header -->
+			<div class="modal-header">
+			  <h4 class="modal-title">Add Doctor</h4>
+			  <button type="button" class="close" data-dismiss="modal">&times;</button>
+			</div>
+
+			<div *ngIf="saveError">
+					<div class="modelAlerttxt alert alert-danger alert-dismissible" role="alert">
+						<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+								<span aria-hidden="true">&times;</span>
+						</button>
+						{{saveErrorMessage}}
+					</div>
+			</div>
+
+			<div  *ngIf="saveSuccess">
+					<div class="modelAlerttxt alert alert-success alert-dismissible" role="alert">
+						<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+								<span aria-hidden="true">&times;</span>
+						</button>
+						The doctor details is saved successfully!!!
+					</div>
+			</div>
+			<form #doctorAddForm="ngForm" (ngSubmit)="onSubmit(doctorAddForm)" novalidate>
+				<!-- Modal body -->
+				<div class="modal-body">
+					<div class="form-group">
+							<label>Doctor Name</label>
+							<input type="text" class="form-control input_box" pattern="(?!^[0-9]*$)(?!^[a-zA-Z]*$)^([a-zA-Z0-9]{0,4})$" placeholder="Enter doctor name"
+							 id="doctorNameInput" [(ngModel)]="doctorName" autofocus="autofocus" name="doctorName" #doctorNameRef="ngModel" tabindex="1"
+							 (ngModelChange)="changeDoctorName()" />
+					</div>
+				</div>
+		
+				<!-- Modal footer -->
+				<div class="modal-footer">
+					<button type="submit" class="btn btn-success"> Save </button>
+					<button type="button" class="btn btn-danger" (click) = "getDoctorService(0)" data-dismiss="modal">Close</button>
+				</div>
+			</form>
+		  </div>
+		</div>
+	  </div>
+
+</div>
