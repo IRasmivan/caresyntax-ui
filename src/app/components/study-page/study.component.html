@@ -1,0 +1,320 @@
+<div class="firstPage container-fluid">
+
+	<div *ngIf="loader" class="generaltxt d-flex align-items-center justify-content-center h-100">
+		<div class="d-flex flex-column">
+			<i class="fa fa-spinner fa-pulse fa-3x fa-fw"></i>
+			<span class="sr-only">Loading...</span>
+		</div>
+	</div>
+
+	<div *ngIf="noStudy" class="generaltxt align-items-center justify-content-center h-100">
+		<div class="alert alert-warning" role="alert">
+			There are no study in the system, Please add new study.
+		</div>
+	</div>
+
+	<div class="generaltxt d-flex align-items-center justify-content-center h-100">
+		<div *ngIf="disableViewDataTable" class="col-xs-8 col-sm-8 col-md-8 col-lg-8 bottom-margin">
+			<div>
+				<h4 class="lefttxt">Study List</h4>
+			</div>
+			<p-table #dt [columns]="cols" [value]="dataMarts" [paginator]="true" [rows]="rowPerPage" [pageLinks]="5"
+				[first]="first" [totalRecords]="totalRecords" responsive="true" (onLazyLoad)="loadstudyLazy($event)"
+				selectionMode="single" [(selection)]="selectedRow" (onRowSelect)="onRowSelect($event)" (onRowUnselect)="onRowUnselect($event)"
+				[lazy]="true" class="ui-datatable-scrollable-wrapper view-table">
+				<ng-template pTemplate="header" let-columns>
+					<tr>
+						<th *ngFor="let col of columns" [ngStyle]="{'display': col.display}">
+							{{col.header}}
+						</th>
+					</tr>
+				</ng-template>
+				<ng-template pTemplate="body" let-rowData let-columns="columns">
+					<tr [pSelectableRow]="rowData">
+						<td *ngFor="let col of columns" [ngStyle]="{'display': col.display}">
+							{{rowData[col.field]}}
+						</td>
+					</tr>
+				</ng-template>
+			</p-table>
+		</div>
+	</div>
+
+	<div class="generaltxt align-items-center justify-content-center h-100">
+		<button type="button" class="mr-2 btn btn-outline-primary" data-toggle="modal" data-target="#addModal">Add study</button>
+		<button type="button" class="mr-2 btn btn-outline-info" [disabled]="disableUpdate" (click)="updateStudy()" data-toggle="modal" data-target="#updateModal">Update study</button>
+		<button type="button" class="mr-2 btn btn-outline-secondary" [disabled]="disableRefresh" (click)="getStudyService(0)">Refresh Grid</button>
+	</div>
+	<!-- No results section-->
+	<div class="generaltxt align-items-center justify-content-center h-100" *ngIf="resultviewerror">
+		<div class="alert alert-danger" role="alert">
+			{{message}}
+		</div>
+	</div>
+
+	<!-- The Modal -->
+	<div class="modal" id="addModal">
+			<div class="modal-dialog">
+				<div class="modal-content">
+			
+				<!-- Modal Header -->
+				<div class="modal-header">
+					<h4 class="modal-title">Add Study</h4>
+					<button type="button" class="close" data-dismiss="modal">&times;</button>
+				</div>
+
+				<div *ngIf="saveError">
+						<div class="modelAlerttxt alert alert-danger alert-dismissible" role="alert">
+							<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+									<span aria-hidden="true">&times;</span>
+							</button>
+							{{saveErrorMessage}}
+						</div>
+				</div>
+	
+				<div  *ngIf="saveSuccess">
+						<div class="modelAlerttxt alert alert-success alert-dismissible" role="alert">
+							<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+									<span aria-hidden="true">&times;</span>
+							</button>
+							The Study details is saved successfully!!!
+						</div>
+				</div>
+	
+			
+				<form #studyAddForm="ngForm" (ngSubmit)="onSubmit(studyAddForm)" novalidate>
+					<!-- Modal body -->
+					<div class="modal-body">
+						<div class="form-group">
+								<label for="studyPatientId">Patient Name:</label>
+								<button type="button" (click)="getPatientDetails()" class="clearIcon btn btn-primary" style = "top: 48px; right: 17px;" data-toggle="modal" data-target="#patientSelectModal">validate</button>
+								<input type="text" [(ngModel)]="patientName"  class="form-control" placeholder="Enter patient name" 
+								maxlength="20"
+								required id="studyPatientId" [(ngModel)]="studyPatientId" autofocus="autofocus" name="studyPatientId" #studyPatientIdRef="ngModel" tabindex="1"
+									(ngModelChange)="changeStudyPatientId()" />
+								<small id="emailHelp" class="form-text text-muted">{{productNameDescription}}</small>
+								<span class="clearIcon form-control-feedback fa fa-close" 
+								(click)="clearPatentNameText()"
+								style="right: 102px; top: 59px;"
+								uib-tooltip="clear"
+								></span>
+						</div>
+
+						<div class="form-group">
+								<label for="studyDescription">Study Description:</label>
+								<textarea type="text" 
+								maxlength="200"
+								class="form-control" 
+								placeholder="Enter study description"
+								required id="studyDescription" 
+								[(ngModel)]="studyDescription" 
+								name="studyDescription" 
+								#studyDescriptionRef="ngModel" 
+								tabindex="2"
+								(ngModelChange)="changestudyDescription()" 
+								rows="3" ></textarea>
+								<span class="clearIcon form-control-feedback fa fa-close" 
+								(click)="clearStudyDescription()"
+								style="right: 31px; top: 160px;"
+								uib-tooltip="clear"
+								></span>
+						</div>
+	
+						<div class="form-group">
+							<label for="studyStatus">Status:</label>
+							<select class ="form-control" (change) = "ChangeValue($event)" name="studyStatusValue" [(ngModel)]="studyStatusValue" #studyStatusValueRef="ngModel">   
+									<option *ngFor=" let opt of status" [ngValue]="opt">{{opt}}</option>
+							</select>
+							<span class="clearIcon form-control-feedback fa fa-close" 
+								(click)="clearStudyStatus()"
+								style="right: 31px; top: 301px;"
+								uib-tooltip="clear"
+								></span>
+						</div>
+
+						<div class="form-group">
+							<label for="plannedStartTime">Planned Start Time:</label>
+							<input
+								readonly
+								[value]="plannedStartTime"
+								class ="form-control" 
+								[owlDateTimeTrigger]="dt1" 
+								[owlDateTime]="dt1" 
+								(dateTimeInput)="setPlannedStartTime($event)"
+								placeholder="Planned start time">
+							<span class="clearIcon form-control-feedback" style="right: 37px; top: 382px" [owlDateTimeTrigger]="dt1"><i class="fa fa-calendar"></i></span>
+							<owl-date-time #dt1></owl-date-time>
+							<span class="clearIcon form-control-feedback fa fa-close" 
+								(click)="clearPlannedStartTime()"
+								style="right: 19px; top: 386px"
+								uib-tooltip="clear"
+								></span>
+						</div>
+	
+						<div class="form-group">
+							<label for="estimatedEndTime">Estimated End Time:</label>
+							<input 
+							readonly
+							[value]="estimatedEndTime"
+							(dateTimeInput)="setEstimatedEndTime($event)"
+							class ="form-control" 
+							[owlDateTimeTrigger]="dt2" 
+							[owlDateTime]="dt2" placeholder="Estimated end time">
+							<span class="clearIcon form-control-feedback" style="right: 37px; top: 468px" [owlDateTimeTrigger]="dt2"><i class="fa fa-calendar"></i></span>
+							<owl-date-time #dt2></owl-date-time>
+							<span class="clearIcon form-control-feedback fa fa-close" 
+								(click)="clearEstimateEndTime()"
+								style="right: 19px; top: 472px"
+								uib-tooltip="clear"
+								></span>
+						</div>
+						
+					</div>
+			
+					<!-- Modal footer -->
+					<div class="modal-footer">
+						<button type="button" (click)="clearForm()" class="btn btn-secondary">Clear</button>
+						<button type="submit" [disabled] = "disableSave" class="btn btn-success">Save</button>
+						<button type="button" class="btn btn-danger" (click)="getStudyService(0)" data-dismiss="modal">Close</button>
+					</div>
+				</form>
+				</div>
+			</div>
+	</div>
+	
+	<!-- The Modal -->
+	<div class="modal" id="updateModal">
+			<div class="modal-dialog">
+				<div class="modal-content">
+			
+				<!-- Modal Header -->
+				<div class="modal-header">
+					<h4 class="modal-title">Update Study</h4>
+					<button type="button" class="close" data-dismiss="modal">&times;</button>
+				</div>
+
+				<div *ngIf="saveErrorUpdate">
+						<div class="modelAlerttxt alert alert-danger alert-dismissible" role="alert">
+							<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+									<span aria-hidden="true">&times;</span>
+							</button>
+							{{saveErrorMessage}}
+						</div>
+				</div>
+	
+				<div  *ngIf="saveSuccessUpdate">
+						<div class="modelAlerttxt alert alert-success alert-dismissible" role="alert">
+							<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+									<span aria-hidden="true">&times;</span>
+							</button>
+							The Study details is updated successfully!!!
+						</div>
+				</div>
+	
+			
+				<form #studyAddForm="ngForm" (ngSubmit)="onSubmitForUpdated(studyUpdateForm)" novalidate>
+					<!-- Modal body -->
+					<div class="modal-body">
+						<div class="form-group">
+								<label for="patientNameUpdate">Patient Name:</label>
+								<button type="button" (click)="getPatientDetails()" class="clearIcon btn btn-primary" style = "top: 48px; right: 17px;" data-toggle="modal" data-target="#patientSelectModal">validate</button>
+								<input type="text" [(ngModel)]="patientNameUpdate"  class="form-control" placeholder="Enter patient name" 
+								maxlength="20"
+								required 
+								id="patientNameUpdate"
+								autofocus="autofocus" 
+								name="patientNameUpdate" 
+								#spatientNameUpdateRef="ngModel" 
+								tabindex="1"
+								/>
+								<small id="emailHelp" class="form-text text-muted">{{productNameDescriptionUpdate}}</small>
+								<span class="clearIcon form-control-feedback fa fa-close" 
+								(click)="clearPatentNameUpdate()"
+								style="right: 102px; top: 59px;"
+								uib-tooltip="clear"
+								></span>
+						</div>
+
+						<div class="form-group">
+								<label for="studyDescription">Study Description:</label>
+								<textarea type="text" 
+								maxlength="200"
+								class="form-control" 
+								placeholder="Enter study description"
+								required id="descriptionUpdate" 
+								[(ngModel)]="descriptionUpdate" 
+								name="descriptionUpdate" 
+								#studyDescriptionRef="ngModel" 
+								tabindex="2"
+								(ngModelChange)="changestudyDescription()" 
+								rows="3" ></textarea>
+								<span class="clearIcon form-control-feedback fa fa-close" 
+								(click)="clearStudyDescriptionUpdate()"
+								style="right: 31px; top: 160px;"
+								uib-tooltip="clear"
+								></span>
+						</div>
+	
+						<div class="form-group">
+							<label for="studyStatus">Status:</label>
+							<select class ="form-control" (change) = "ChangeValueUpdate($event)" name="statusValueUpdate" [(ngModel)]="statusValueUpdate" #statusValueUpdateRef="ngModel">   
+									<option *ngFor=" let opt of status" [ngValue]="opt">{{opt}}</option>
+							</select>
+							<span class="clearIcon form-control-feedback fa fa-close" 
+								(click)="clearStudyStatusUpdate()"
+								style="right: 31px; top: 301px;"
+								uib-tooltip="clear"
+								></span>
+						</div>
+
+						<div class="form-group">
+							<label for="plannedStartTime">Planned Start Time:</label>
+							<input
+								readonly
+								[value]="plannedStartTimeUpdate"
+								class ="form-control" 
+								[owlDateTimeTrigger]="dtUpdatePlannedStartTime" 
+								[owlDateTime]="dtUpdatePlannedStartTime" 
+								(dateTimeInput)="setPlannedStartTimeUpdate($event)"
+								placeholder="Planned start time">
+							<span class="clearIcon form-control-feedback" style="right: 37px; top: 382px" [owlDateTimeTrigger]="dtUpdatePlannedStartTime"><i class="fa fa-calendar"></i></span>
+							<owl-date-time #dtUpdatePlannedStartTime></owl-date-time>
+							<span class="clearIcon form-control-feedback fa fa-close" 
+								(click)="clearStudyPlannedStartTimeUpdate()"
+								style="right: 19px; top: 386px"
+								uib-tooltip="clear"
+								></span>
+						</div>
+	
+						<div class="form-group">
+							<label for="estimatedEndTimeUpdate">Estimated End Time:</label>
+							<input 
+							readonly
+							[value]="estimatedEndTimeUpdate"
+							(dateTimeInput)="setEstimatedEndTimeUpdate($event)"
+							class ="form-control" 
+							[owlDateTimeTrigger]="dtestimatedEndTimeUpdate" 
+							[owlDateTime]="dtestimatedEndTimeUpdate" placeholder="Estimated end time">
+							<span class="clearIcon form-control-feedback" style="right: 37px; top: 468px" [owlDateTimeTrigger]="dtestimatedEndTimeUpdate"><i class="fa fa-calendar"></i></span>
+							<owl-date-time #dtestimatedEndTimeUpdate></owl-date-time>
+							<span class="clearIcon form-control-feedback fa fa-close" 
+								(click)="clearStudyEstimateEndTime()"
+								style="right: 19px; top: 472px"
+								uib-tooltip="clear"
+								></span>
+						</div>
+						
+					</div>
+			
+					<!-- Modal footer -->
+					<div class="modal-footer">
+						<button type="button" (click)="clearFormUpdate()" class="btn btn-secondary">Clear</button>
+						<button type="submit" class="btn btn-success">Update</button>
+						<button type="button" class="btn btn-danger" (click)="getStudyService(0)" data-dismiss="modal">Close</button>
+					</div>
+				</form>
+				</div>
+			</div>
+	</div>
+
+</div>

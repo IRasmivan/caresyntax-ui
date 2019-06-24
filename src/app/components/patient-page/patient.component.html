@@ -1,0 +1,251 @@
+<div class="firstPage container-fluid">
+
+	<div *ngIf="loader" class="generaltxt d-flex align-items-center justify-content-center h-100">
+		<div class="d-flex flex-column">
+			<i class="fa fa-spinner fa-pulse fa-3x fa-fw"></i>
+			<span class="sr-only">Loading...</span>
+		</div>
+	</div>
+
+	<div *ngIf="noPatient" class="generaltxt align-items-center justify-content-center h-100">
+		<div class="alert alert-warning" role="alert">
+			There are no patient in the system, Please add new patient.
+		</div>
+	</div>
+
+	<div class="generaltxt d-flex align-items-center justify-content-center h-100">
+		<div *ngIf="disableViewDataTable" class="col-xs-8 col-sm-8 col-md-8 col-lg-8 bottom-margin">
+			<div>
+				<h4 class="lefttxt">Patient List</h4>
+			</div>
+			<p-table #dt [columns]="cols" [value]="dataMarts" [paginator]="true" [rows]="rowPerPage" [pageLinks]="5"
+				[first]="first" [totalRecords]="totalRecords" responsive="true" (onLazyLoad)="loadPatientLazy($event)"
+				selectionMode="single" [(selection)]="selectedRow" (onRowSelect)="onRowSelect($event)" (onRowUnselect)="onRowUnselect($event)"
+				[lazy]="true" class="ui-datatable-scrollable-wrapper view-table">
+				<ng-template pTemplate="header" let-columns>
+					<tr>
+						<th *ngFor="let col of columns">
+							{{col.header}}
+						</th>
+					</tr>
+				</ng-template>
+				<ng-template pTemplate="body" let-rowData let-columns="columns">
+					<tr [pSelectableRow]="rowData">
+						<td *ngFor="let col of columns">
+							{{rowData[col.field]}}
+						</td>
+					</tr>
+				</ng-template>
+			</p-table>
+		</div>
+	</div>
+
+	<div class="generaltxt align-items-center justify-content-center h-100">
+		<button type="button" class="mr-2 btn btn-outline-primary" data-toggle="modal" data-target="#addModal">Add Patient</button>
+		<button type="button" class="mr-2 btn btn-outline-info" [disabled]="disableUpdate" (click)="updatePatient()" data-toggle="modal" data-target="#updateModal">Update Patient</button>
+		<button type="button" class="mr-2 btn btn-outline-secondary" [disabled]="disableRefresh" (click)="getPatientService(0)">Refresh Grid</button>
+	</div>
+	<!-- No results section-->
+	<div class="generaltxt align-items-center justify-content-center h-100" *ngIf="resultviewerror">
+		<div class="alert alert-danger" role="alert">
+			{{message}}
+		</div>
+	</div>
+
+	<!-- The Modal -->
+	<div class="modal" id="addModal">
+		<div class="modal-dialog">
+		  <div class="modal-content">
+	  
+			<!-- Modal Header -->
+			<div class="modal-header">
+			  <h4 class="modal-title">Add Patient</h4>
+			  <button type="button" class="close" data-dismiss="modal">&times;</button>
+			</div>
+
+			<div *ngIf="saveError">
+					<div class="modelAlerttxt alert alert-danger alert-dismissible" role="alert">
+						<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+								<span aria-hidden="true">&times;</span>
+						</button>
+						{{saveErrorMessage}}
+					</div>
+			</div>
+
+			<div  *ngIf="saveSuccess">
+					<div class="modelAlerttxt alert alert-success alert-dismissible" role="alert">
+						<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+								<span aria-hidden="true">&times;</span>
+						</button>
+						The patient details is saved successfully!!!
+					</div>
+			</div>
+			<form #patientAddForm="ngForm" (ngSubmit)="onSubmit(patientAddForm)" novalidate>
+				<!-- Modal body -->
+				<div class="modal-body">
+					<div class="form-group">
+							<label for="patientNameInput">Patient Name:</label>
+							<input type="text" class="form-control" pattern="(?!^[0-9]*$)(?!^[a-zA-Z]*$)^([a-zA-Z0-9]{0,4})$" placeholder="Enter patient name"
+							required id="patientNameInput" [(ngModel)]="patientName" autofocus="autofocus" name="patientName" #patientNameRef="ngModel" tabindex="1"
+							 (ngModelChange)="changePatientName()" />
+							<span class="clearIcon form-control-feedback fa fa-close" 
+							(click)="clearPatentNameText()"
+							style="right: 31px; top: 58px;"
+							uib-tooltip="clear"
+							></span>
+													
+					</div>
+
+					<div class="form-group">
+						<label for="patentsex">Sex:</label>
+						<select class ="form-control" (change) = "ChangeValue($event)" name="patentSexValue" [(ngModel)]="patentSexValue" #patentSexValueRef="ngModel">   
+								<option *ngFor=" let opt of patentSex" [ngValue]="opt">{{opt}}</option>
+						</select>
+						<span class="clearIcon form-control-feedback fa fa-close" 
+							(click)="clearPatentSex()"
+							style="right: 31px; top: 144px;"
+							uib-tooltip="clear"
+							></span>
+					</div>
+
+					<div class="form-group">
+						<label for="dateofbirth">Date Of Birth:</label>
+						<div class="input-group">
+							<input class="form-control" placeholder="yyyy-mm-dd" id="dateofbirth"
+									name="patientDob" [(ngModel)]="patientDob" ngbDatepicker [maxDate]="maxDate" #d="ngbDatepicker">
+							<div class="input-group-append">
+							<button class="btn btn-outline-secondary fa fa-calendar" (click)="d.toggle()" type="button"></button>
+							<span class="clearIcon form-control-feedback fa fa-close" 
+							(click)="clearPatientDob()"
+							style="right: 45px; top: 11px;"
+							uib-tooltip="clear"
+							></span>
+							</div>
+						</div>
+					</div>
+				</div>
+		
+				<!-- Modal footer -->
+				<div class="modal-footer">
+					<button type="button" (click)="clearForm()" class="btn btn-secondary">Clear</button>
+					<button type="submit" class="btn btn-success">Save</button>
+					<button type="button" class="btn btn-danger" (click)="getPatientService(0)" data-dismiss="modal">Close</button>
+				</div>
+			</form>
+		  </div>
+		</div>
+	  </div>
+
+	<!-- The Modal -->
+	<div class="modal" id="updateModal">
+			<div class="modal-dialog">
+			  <div class="modal-content">
+		  
+				<!-- Modal Header -->
+				<div class="modal-header">
+				  <h4 class="modal-title">Update Patient</h4>
+				  <button type="button" class="close" data-dismiss="modal">&times;</button>
+				</div>
+	
+				<div *ngIf="saveErrorUpdate">
+						<div class="modelAlerttxt alert alert-danger alert-dismissible" role="alert">
+							{{saveErrorMessage}}
+						</div>
+				</div>
+	
+				<div  *ngIf="saveSuccessUpdate">
+						<div class="modelAlerttxtalert alert-success alert-dismissible" role="alert">
+							The patient details is updated successfully!!!
+						</div>
+				</div>
+				<form #patientUpdateForm="ngForm" (ngSubmit)="onSubmitForUpdated(patientUpdateForm)" novalidate>
+					<!-- Modal body -->
+					<div class="modal-body">
+
+							<div class="form-group">
+									<label for="patientIdInputUpdate">Patient Id:</label>
+									<input type="text" 
+										[disabled] = "true"
+										class="form-control" 
+										id="patientIdInputUpdate" 
+										[(ngModel)]="patientIdUpdate" 
+										autofocus="autofocus" 
+										name="patientIdUpdate" 
+										#patientIdRef="ngModel" 
+										/>						
+							</div>
+
+						<div class="form-group">
+								<label for="patientNameInputUpdate">Patient Name:</label>
+								<input type="text" 
+									class="form-control" 
+									pattern="(?!^[0-9]*$)(?!^[a-zA-Z]*$)^([a-zA-Z0-9]{0,4})$" 
+									placeholder="Enter patient name"
+									required 
+									id="patientNameInputUpdate" 
+									[(ngModel)]="patientNameUpdate" 
+									autofocus="autofocus" 
+									name="patientNameUpdate" 
+									#patientNameUpdateRef="ngModel" 
+									tabindex="1"
+									(ngModelChange)="changePatientNameUpdate()" />
+								<span class="clearIcon form-control-feedback fa fa-close" 
+								(click)="clearPatentNameUpdateText()"
+								style="right: 31px; top: 145px;"
+								uib-tooltip="clear"></span>
+														
+						</div>
+	
+						<div class="form-group">
+							<label for="patentsex">Sex:</label>
+							<select class ="form-control" 
+								(change) = "ChangeValueUpdate($event)" 
+								name="patentSexValueUpdate" 
+								[(ngModel)]="patentSexValueUpdate" 
+								#patentSexValueRef="ngModel">   
+									<option *ngFor=" let opt of patentSex" [ngValue]="opt">{{opt}}</option>
+							</select>
+							<span class="clearIcon form-control-feedback fa fa-close" 
+								(click)="clearPatentSexUpdate()"
+								style="right: 31px; top: 229px;"
+								uib-tooltip="clear"
+								></span>
+						</div>
+	
+						<div class="form-group">
+							<label for="dateofbirth">Date Of Birth:</label>
+							<div class="input-group">
+								<input class="form-control" 
+									placeholder="yyyy-mm-dd" 
+									id="dateofbirth"
+									name="patientDobUpdate" 
+									[(ngModel)]="patientDobUpdate" 
+									ngbDatepicker 
+									[maxDate]="maxDate" 
+									#dUpdate="ngbDatepicker">
+								<div class="input-group-append">
+								<button class="btn btn-outline-secondary fa fa-calendar" (click)="dUpdate.toggle()" type="button"></button>
+								<span class="clearIcon form-control-feedback fa fa-close" 
+								(click)="clearPatientDobUpdate()"
+								style="right: 45px; top: 11px;"
+								uib-tooltip="clear"
+								></span>
+								</div>
+							</div>
+						</div>
+					</div>
+			
+					<!-- Modal footer -->
+					<div class="modal-footer">
+						<button type="button" (click)="clearFormUpdate()" class="btn btn-secondary">Clear</button>
+						<button type="submit" class="btn btn-success">Update</button>
+						<button type="button" class="btn btn-danger" (click)="getPatientService(0)" data-dismiss="modal">Close</button>
+					</div>
+				</form>
+			  </div>
+			</div>
+		  </div>
+
+
+
+</div>

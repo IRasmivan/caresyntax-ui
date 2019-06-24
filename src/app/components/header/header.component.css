@@ -1,0 +1,89 @@
+ h1{
+     margin-top:0px;
+     line-height: 0.8;
+ }
+
+ .title-header{
+        margin-top: 7px;
+     }
+ .no_padding{
+    padding:0;
+}
+.cur-btn{
+    cursor:pointer;
+}
+.no_margin{
+    margin:0;
+}
+.margin-tb{
+    margin: 0.5% 0;
+}
+.padding{
+    padding:15px;
+}
+ .pointer{
+     cursor:pointer;
+ }
+ .margin_top{
+    margin-top:1%;  
+}
+ header .logo-and-search{
+    width:15% !important;
+    margin: 0!important;
+    padding: 0px 0 10px!important;
+ }
+ .userdetails{
+    display:inline;
+    padding:5px 10px;
+    background: black;
+    color: #fff;
+    border-radius: 4px;
+ }
+ .title-header h1{
+     text-align: center;
+     text-transform: uppercase;
+     font-size: 2em;
+ }
+ .login_cnt{
+     text-align: right;
+    border: 1px solid #333;
+    padding: 2px 35px;
+    border-radius: 5px;
+    clear: both;
+ }
+ .login_cnt p{
+     margin:0;
+ }
+ 
+ #brand-logo{
+	 cursor: pointer;
+ }
+ .menu_border{
+     border-bottom: 2px solid;
+ }
+ @media (min-width:768px) and (max-width:992px){
+.title-header h1{
+     font-size: 1.8em;
+ }
+ }
+ @media (max-width:768px){
+ .login-section{
+     position: absolute;
+     right:0;
+     padding:0;
+ }
+ .margin_top{
+     margin-top:4%;
+ }
+ }
+  @media (max-width:320px){
+ .login_cnt{
+     padding:2px 5px;
+ }
+ }
+
+ .generaltxt {
+    text-align: center;
+    padding-top: 11px;
+    font-size: 40px;
+}

@@ -1,0 +1,205 @@
+
+.no_padding{
+    padding:0;
+}
+.no_margin{
+    margin:0;
+}
+.margin_top{
+    margin-top:5%;   
+} 
+.textblock h1{
+    font-size:2em;
+    text-align: center;
+}
+.copy h2{		
+    font-size: 4em;		
+    margin-top:0;		
+}
+.copy{
+    font-size:1.5em;
+    text-align: center;
+}
+.copy p{
+    font-size: 1.2em;
+}
+.fade {		
+    animation-name:fadein;		
+    animation-duration: 2s;		
+    animation-fill-mode:forwards;		
+}
+
+.norole{
+        text-align: center;
+    display: block;
+    font-size: 3em;
+    margin: 1em 0em;
+}
+
+.msg{
+     animation-name:fadein-home;
+    animation-duration: 2s;
+    animation-iteration-count: infinite;
+}
+
+.roleLoader{
+    display: block;
+    text-align: center;
+    font-size: 2em;
+}
+
+.roleLoading{
+    display: block;
+    text-align: center;
+    font-size: 0.5em;
+}
+
+.amberGreen{
+    color:#b5c956;
+}
+@keyframes fadein-home {
+    0%{
+        opacity:0;
+    }
+    50%{
+        opacity:1;
+    }
+    100%{
+        opacity: 0;
+    }
+}
+
+@keyframes fadein {		
+    0%{		
+        opacity:0;		
+    }		
+    100%{		
+        opacity:1;		
+    }		
+}		
+@media (max-width : 772px){		
+.copy h2{		
+    font-size: 2em;		
+}		
+}
+
+.no_padding{
+    padding:0;
+}
+.no_margin{
+    margin:0;
+}
+.margin_top{
+    margin-top:10%;   
+} 
+.textblock h1{
+    font-size:2em;
+    text-align: center;
+}
+.copy h2{		
+    font-size: 4em;		
+    margin-top:0;		
+}
+.copy{
+    font-size:1.5em;
+    text-align: center;
+}
+.copy p{
+    font-size: 1.2em;
+}
+	.fade {		
+    animation-name:fadein;		
+    animation-duration: 2s;		
+    animation-fill-mode:forwards;		
+}		
+.style {
+    border-right: 1px solid #000;
+}
+.welcome_title{
+        text-align: center;
+    font-size: 2em;
+    display:block;
+}
+.border-right
+{
+    border-right: 1px solid #000;
+    margin-top: 60px;
+}
+
+.border-left
+{
+    margin-top: 60px;
+}
+
+.block_txt{
+    text-align: center;
+    font-size: 3.2em;
+    display:block;
+}
+.relative{
+    position: relative;
+}
+.displayme{
+    display:none;
+    position: absolute;
+    text-align: center;
+    border: 1px solid #000;
+    padding: 12px;
+    left:8%;
+    z-index: -10;
+    color: black;
+}
+.action_link{
+    width:50px;
+    height:50px;
+    display: block;
+    margin-bottom: 15px;
+    background: #000;
+    border-radius: 50%;
+    color:#000;
+}
+.action_link:hover .displayme{
+   display:block;
+   animation-name: slidein;
+   animation-duration: 1s;
+   animation-fill-mode: forwards;
+}
+.icon{
+     color: #BDD755;
+    top: 16%;
+    left: 5.5%;
+    font-size: 30px;
+    position: absolute !important;
+}
+
+.modal-header{
+    background-color: black;
+    color: white;
+    text-align: center;
+}
+
+@keyframes slidein {		
+    0%{		
+        width:70%;
+        opacity: 0;	
+         background: #000;	
+    }		
+    100%{		
+        width:80%;	
+        opacity: 1;	
+         background: #BDD755;
+    }		
+}
+@keyframes fadein {		
+    0%{		
+        opacity:0;		
+    }		
+    100%{		
+        opacity:1;		
+    }		
+}		
+@media (max-width : 772px){		
+.copy h2{		
+    font-size: 2em;		
+}		
+}
